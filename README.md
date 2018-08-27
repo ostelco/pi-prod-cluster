@@ -1,6 +1,6 @@
 # Google GKE PROD cluster
 
-[![CircleCI](https://circleci.com/gh/ostelco/pi-prod-cluster/tree/master.svg?style=svg&circle-token=73f413df2d44cad888b45fe96d7a9d8f6898fc02)](https://circleci.com/gh/ostelco/infra/tree/dev)
+[![CircleCI](https://circleci.com/gh/ostelco/pi-prod-cluster.svg?style=svg&circle-token=7dd15473a94c628bc5c1e8f092e0216371ffba85)](https://circleci.com/gh/ostelco/pi-prod-cluster)
 
 Terraform config and Circleci pipeline to build and maintain Kubernetes Production cluster.
 
