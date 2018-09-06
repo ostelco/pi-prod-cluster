@@ -48,7 +48,7 @@ jobs:
 
   deploy-prod-utilities: 
     docker:
-    - image: praqma/helmsman:test-1.4.0
+    - image: praqma/helmsman:v1.5.0-helm-v2.8.1
 
     working_directory: ~/repo
 
@@ -64,7 +64,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/credentials.json
           export PI_PROD_K8S_ENDPOINT=https://$(cat endpoint.txt)
           cd .circleci      
-          helmsman --debug --apply -f helmsman-prod-utilities.toml            
+          helmsman --debug --apply --keep-untracked-releases -f helmsman-prod-utilities.toml            
 
 workflows:
   version: 2
