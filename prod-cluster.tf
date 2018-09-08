@@ -35,26 +35,37 @@ module "gke" {
   #cluster_additional_zones = ["europe-west1-b"]
 }
 
-module "np" {
-  source         = "github.com/ostelco/ostelco-terraform-modules//terraform-google-gke-node-pool"
-  cluster_name   = "${module.gke.cluster_name}"
-  node_pool_zone = "${module.gke.cluster_zone}"
-
-  node_pool_name         = "small-nodes-pool"
-  node_count             = "2"
-  pool_min_node_count    = "1"
-  pool_max_node_count    = "4"
-  node_tags              = ["prod"]
-
-  # oauth_scopes define what Google API nodes in the pool have access to.
-  # list of APIs can be found here: https://developers.google.com/identity/protocols/googlescopes
-  
-  node_labels = {
-    "env"         = "prod"
-    "machineType" = "n1-standard-1"
-  }
+module "pool1" {                                                                                    
+  source         = "github.com/ostelco/ostelco-terraform-modules//terraform-google-gke-node-pool"   
+  cluster_name   = "${module.gke.cluster_name}"                                                     
+  node_pool_zone = "${module.gke.cluster_zone}"                                                     
+                                                                                                    
+  node_pool_name         = "new-small-nodes-pool"                                                   
+  node_count             = "2"                                                                      
+  pool_min_node_count    = "1"                                                                      
+  pool_max_node_count    = "4"                                                                      
+  node_tags              = ["prod"]                                                                 
+                                                                                                    
+  # oauth_scopes define what Google API nodes in the pool have access to.                           
+  # list of APIs can be found here: https://developers.google.com/identity/protocols/googlescopes   
+  oauth_scopes = [                                                                                  
+      "https://www.googleapis.com/auth/compute",                                                    
+      "https://www.googleapis.com/auth/devstorage.read_write",                                      
+      "https://www.googleapis.com/auth/logging.write",                                              
+      "https://www.googleapis.com/auth/monitoring",                                                 
+      "https://www.googleapis.com/auth/service.management",                                         
+      "https://www.googleapis.com/auth/pubsub",                                                     
+      "https://www.googleapis.com/auth/datastore",                                                  
+      "https://www.googleapis.com/auth/bigquery",                                                   
+      "https://www.googleapis.com/auth/sqlservice.admin",                                           
+      "https://www.googleapis.com/auth/ndev.clouddns.readwrite",                                    
+    ]                                                                                               
+                                                                                                    
+  node_labels = {                                                                                
+    "env"         = "prod"                                                                       
+    "machineType" = "n1-standard-1"                                                              
+  }                    
 }
-
 
 output "prod_cluster_endpoint" {
   value = "${module.gke.cluster_endpoint}"
