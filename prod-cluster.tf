@@ -28,7 +28,7 @@ module "gke" {
   cluster_password    = "${var.cluster_admin_password}"
   cluster_name        = "pi-prod"
   cluster_description = "Production cluster for Ostelco Pi."
-  cluster_version     = "1.9.7-gke.6"
+  cluster_version     = "1.10.6-gke.2"
   cluster_zone        = "${var.cluster_zone}"
 
   # the line below makes the cluster multizone (regional)
@@ -48,18 +48,7 @@ module "np" {
 
   # oauth_scopes define what Google API nodes in the pool have access to.
   # list of APIs can be found here: https://developers.google.com/identity/protocols/googlescopes
-  oauth_scopes = [
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/devstorage.read_write",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-      "https://www.googleapis.com/auth/service.management",
-      "https://www.googleapis.com/auth/pubsub",
-      "https://www.googleapis.com/auth/datastore",
-      "https://www.googleapis.com/auth/bigquery",
-      "https://www.googleapis.com/auth/sqlservice.admin",
-    ]
-
+  
   node_labels = {
     "env"         = "prod"
     "machineType" = "n1-standard-1"
