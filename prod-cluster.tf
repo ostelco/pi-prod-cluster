@@ -41,7 +41,6 @@ module "pool1" {
   node_pool_zone = "${module.gke.cluster_zone}"                                                     
                                                                                                     
   node_pool_name         = "new-small-nodes-pool"                                                   
-  node_count             = "2"                                                                      
   pool_min_node_count    = "1"                                                                      
   pool_max_node_count    = "4"                                                                      
   node_tags              = ["prod"]                                                                 
