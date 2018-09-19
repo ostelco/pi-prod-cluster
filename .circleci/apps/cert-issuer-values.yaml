@@ -12,29 +12,29 @@ letsencrypt:
   production:
     type: ClusterIssuer # ClusterIssuer or Issuer
     # namespace: default # only needed if type is Issuer
-    acmeEmail: sami@praqma.com
+    acmeEmail: services@redotter.org
     name: letsencrypt-production
     apiVersion: 2
     http01:
-      enabled: true
+      enabled: false
     dns01: 
-      enabled: false 
-      provider: google-dns
-      googleProject: 
-      serviceAccountSecretName: cert-manager-google-serviceaccount # the secret containing the google cloud credentials with DNS admin permission
+      enabled: true 
+      provider: dev-clouddns
+      googleProject: pi-ostelco-dev
+      serviceAccountSecretName: dev-clouddns-svc-acct-secret  # the secret containing the google cloud credentials with DNS admin permission (in kube-system)
       serviceAccountKey: service-account.json    
   staging:
     type: ClusterIssuer
     # namespace: default # only needed if type is Issuer
-    acmeEmail: sami@praqma.com
+    acmeEmail: services@redotter.org
     name: letsencrypt-staging
     apiVersion: 2
     staging: true
     http01:
-      enabled: true
+      enabled: false
     dns01: 
-      enabled: false 
-      provider: google-dns
-      googleProject: 
-      serviceAccountSecretName: cert-manager-google-serviceaccount # the secret containing the google cloud credentials with DNS admin permission
+      enabled: true 
+      provider: dev-clouddns
+      googleProject: pi-ostelco-dev
+      serviceAccountSecretName: dev-clouddns-svc-acct-secret  # the secret containing the google cloud credentials with DNS admin permission
       serviceAccountKey: service-account.json
