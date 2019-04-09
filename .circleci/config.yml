@@ -2,7 +2,7 @@ version: 2
 jobs: 
   terraform-prod-plan:
     docker:
-    - image: eu.gcr.io/pi-ostelco-dev/terraform-gcloud:11.7
+    - image: eu.gcr.io/pi-ostelco-prod/terraform-gcloud:11.13
       environment: 
         CLUSTER: prod
         GOOGLE_CREDENTIALS: /tmp/credentials.json
@@ -22,7 +22,7 @@ jobs:
 
   terraform-prod-apply:
     docker:
-    - image: eu.gcr.io/pi-ostelco-dev/terraform-gcloud:11.7
+    - image: eu.gcr.io/pi-ostelco-prod/terraform-gcloud:11.13
       environment: 
         CLUSTER: prod
         GOOGLE_CREDENTIALS: /tmp/credentials.json
@@ -38,17 +38,18 @@ jobs:
           terraform init
           terraform apply --auto-approve  \
           -var cluster_admin_password=$PROD_CLUSTER_PASSWORD 
-          chmod +x .circleci/store_cluster_certs.sh 
           .circleci/store_cluster_certs.sh 
 
     - persist_to_workspace:
           root: ~/repo/
           paths:
-            - endpoint.txt      
+            - static_ip.txt
+            - endpoint.txt 
+            - keys/*     
 
   deploy-prod-utilities: 
     docker:
-    - image: praqma/helmsman:v1.6.0-helm-v2.10.0
+    - image: praqma/helmsman:v1.8.1-helm-v2.11.0
 
     working_directory: ~/repo
 
@@ -63,8 +64,8 @@ jobs:
           echo $PI_PROD_GOOGLE_CREDENTIALS > /tmp/credentials.json
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/credentials.json
           export PI_PROD_K8S_ENDPOINT=https://$(cat endpoint.txt)
-          cd .circleci      
-          helmsman --debug --apply --keep-untracked-releases -f helmsman-prod-utilities.toml            
+          export AMBASSADOR_STATIC_IP=$(cat static_ip.txt)      
+          helmsman --apply --keep-untracked-releases --suppress-diff-secrets -f .circleci/helmsman-prod-utilities.toml            
 
 workflows:
   version: 2

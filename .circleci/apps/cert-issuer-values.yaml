@@ -5,7 +5,7 @@
 #################### NOTE: GOOGLE DNS SECRET ######################################################
 # A secret containing Google Cloud Service Account credentials to access Google Cloud DNS must 
 # exist in the kube-system namespace. It can be created with the following command:
-# kubectl create secret generic cert-manager-google-serviceaccount -n kube-system --from-file=service-account.json=/path/to/your/pi-ostelco-dns.json  
+# kubectl create secret generic dev-clouddns-svc-acct-secret -n kube-system --from-file=service-account.json=/path/to/your/pi-ostelco-dns.json  
 ###################################################################################################
 
 letsencrypt:
@@ -21,7 +21,7 @@ letsencrypt:
       enabled: true 
       provider: dev-clouddns
       googleProject: pi-ostelco-dev
-      serviceAccountSecretName: dev-clouddns-svc-acct-secret  # the secret containing the google cloud credentials with DNS admin permission (in kube-system)
+      serviceAccountSecretName: clouddns-svc-acct-key  # the secret containing the google cloud credentials with DNS admin permission (in kube-system)
       serviceAccountKey: service-account.json    
   staging:
     type: ClusterIssuer
@@ -36,5 +36,5 @@ letsencrypt:
       enabled: true 
       provider: dev-clouddns
       googleProject: pi-ostelco-dev
-      serviceAccountSecretName: dev-clouddns-svc-acct-secret  # the secret containing the google cloud credentials with DNS admin permission
+      serviceAccountSecretName: clouddns-svc-acct-key  # the secret containing the google cloud credentials with DNS admin permission
       serviceAccountKey: service-account.json
