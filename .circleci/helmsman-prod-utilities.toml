@@ -81,7 +81,6 @@ datawire="https://www.getambassador.io"
     valuesFile = "apps/ambassador-values.yaml" 
     wait = true
     priority = -6
-    protected = true
      [apps.ambassador.set]
       "service.loadBalancerIP" = "$AMBASSADOR_STATIC_IP"
 
