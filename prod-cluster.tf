@@ -41,7 +41,7 @@ module "gke" {
 
 }
 
-module "high-mem" {
+module "high-mem2" {
   source         = "github.com/ostelco/ostelco-terraform-modules//terraform-google-gke-node-pool"
   project_id     = "${var.project_id}"
   regional       = "${var.regional}"
@@ -49,7 +49,7 @@ module "high-mem" {
   cluster_region = "${var.cluster_region}"
   node_pool_zone = "${var.cluster_zones[0]}"
 
-  node_pool_name = "highmem-pool"
+  node_pool_name = "highmem-pool2"
   pool_min_node_count    = "2"
   initial_node_pool_size = "3"
   pool_max_node_count    = "6"
