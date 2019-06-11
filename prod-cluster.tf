@@ -55,6 +55,7 @@ module "high-mem" {
   pool_max_node_count    = "6"
   node_tags              = ["high-mem"]
   auto_upgrade           = true
+  pool_node_machine_type = "n1-standard-4"
 
   node_labels = {
     "env"         = "high-mem"
