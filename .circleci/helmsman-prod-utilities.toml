@@ -32,7 +32,6 @@ storageBackend = "secret" # default is configMap
 # private repos hosted in s3,GCS buckets are supported
 [helmRepos]
 ostelco="https://storage.googleapis.com/pi-ostelco-helm-charts-repo/"
-datawire="https://www.getambassador.io"
 
 
 [apps]
@@ -70,7 +69,7 @@ datawire="https://www.getambassador.io"
     valuesFile = "apps/neo4j-values.yaml"
     priority = -7 
     wait = true
-    protected = true
+    #protected = true
 
     [apps.ambassador]
     description = "Ambassador API Gateway."
