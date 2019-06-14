@@ -121,8 +121,8 @@ readReplica:
 
 resources: 
   limits:
-    cpu: 250m
-    memory: 1000Mi
+    cpu: 1000m
+    memory: 3Gi
   requests:
-    cpu: 100m
-    memory: 512Mi
+    cpu: 400m
+    memory: 1Gi
