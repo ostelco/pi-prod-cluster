@@ -35,7 +35,7 @@ module "gke" {
   cluster_password      = "${var.cluster_admin_password}"
   cluster_name          = "pi-prod"
   cluster_description   = "Production cluster for Ostelco Pi."
-  cluster_version       = "1.13.6-gke.6"
+  cluster_version       = "1.13.6-gke.13"
   cluster_zones         = "${var.cluster_zones}"
   regional              = "${var.regional}"
 
