@@ -62,7 +62,7 @@ jobs:
           name: create prod cluster prerequisites 
           command: |
             export GOOGLE_CREDENTIALS=${PI_PROD_GOOGLE_CREDENTIALS}
-            ./authenticate.bash
+            /authenticate.bash
             # create SSD storage class
             kubectl apply -f .circleci/storage_class.yaml
             # cert-manager CRDs and namespace labels
