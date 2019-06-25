@@ -6,7 +6,7 @@ variable "project_id" {
 
 variable "regional" {
   description = "whether the cluster should be created in multiple zones or not."
-  default = false
+  default = true
 }
 
 variable "cluster_region" {
@@ -15,7 +15,7 @@ variable "cluster_region" {
 }
 
 variable "cluster_zones" {
-  default     = ["europe-west1-c"]
+  default     = ["europe-west1-b", "europe-west1-c", "europe-west1-d"]
   description = "The zone(s) where the cluster will be created."
 }
 
@@ -35,31 +35,31 @@ module "gke" {
   cluster_password      = "${var.cluster_admin_password}"
   cluster_name          = "pi-prod"
   cluster_description   = "Production cluster for Ostelco Pi."
-  cluster_version       = "1.11.8-gke.4"
+  cluster_version       = "1.13.6-gke.6"
   cluster_zones         = "${var.cluster_zones}"
   regional              = "${var.regional}"
 
 }
 
-module "high-mem2" {
+module "prime-nodes" {
   source         = "github.com/ostelco/ostelco-terraform-modules//terraform-google-gke-node-pool"
   project_id     = "${var.project_id}"
   regional       = "${var.regional}"
   cluster_name   = "${module.gke.cluster_name}" # creates implicit dependency
   cluster_region = "${var.cluster_region}"
-  node_pool_zone = "${var.cluster_zones[0]}"
 
-  node_pool_name = "highmem-pool2"
-  pool_min_node_count    = "2"
-  initial_node_pool_size = "3"
-  pool_max_node_count    = "6"
-  node_tags              = ["high-mem"]
+  node_pool_name = "prime-nodes"
+  pool_min_node_count    = "1"
+  initial_node_pool_size = "1"
+  pool_max_node_count    = "2"
+  node_tags              = ["prod", "prime"]
   auto_upgrade           = true
   pool_node_machine_type = "n1-standard-4"
 
   node_labels = {
-    "env"         = "high-mem"
-    "machineType" = "n1-highmem-2"
+    "target"         = "prime"
+    "machineType" = "n1-standard-4"
+    "env"         = "prod"
   }
   
   # oauth_scopes define what Google API nodes in the pool have access to.
@@ -76,6 +76,80 @@ module "high-mem2" {
       "https://www.googleapis.com/auth/sqlservice.admin",
       "https://www.googleapis.com/auth/ndev.clouddns.readwrite", 
       "https://www.googleapis.com/auth/servicecontrol",
+    ]
+
+
+}
+
+module "neo4j-nodes" {
+  source         = "github.com/ostelco/ostelco-terraform-modules//terraform-google-gke-node-pool"
+  project_id     = "${var.project_id}"
+  regional       = "${var.regional}"
+  cluster_name   = "${module.gke.cluster_name}" # creates implicit dependency
+  cluster_region = "${var.cluster_region}"
+
+  node_pool_name = "neo4j-nodes"
+  pool_min_node_count    = "1"
+  initial_node_pool_size = "1"
+  pool_max_node_count    = "3"
+  node_tags              = ["prod", "neo4j"]
+  auto_upgrade           = true
+  pool_node_machine_type = "n1-standard-2"
+
+  node_labels = {
+    "target"         = "neo4j"
+    "machineType" = "n1-standard-2"
+    "env"         = "prod"
+  }
+  
+  # oauth_scopes define what Google API nodes in the pool have access to.
+  # list of APIs can be found here: https://developers.google.com/identity/protocols/googlescopes
+  oauth_scopes = [
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/devstorage.read_write",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      # "https://www.googleapis.com/auth/service.management",
+      # "https://www.googleapis.com/auth/pubsub",
+      # "https://www.googleapis.com/auth/datastore",
+      # "https://www.googleapis.com/auth/bigquery",
+      # "https://www.googleapis.com/auth/sqlservice.admin",
+      # "https://www.googleapis.com/auth/ndev.clouddns.readwrite", 
+      # "https://www.googleapis.com/auth/servicecontrol",
+    ]
+
+
+}
+
+module "utilities-nodes" {
+  source         = "github.com/ostelco/ostelco-terraform-modules//terraform-google-gke-node-pool"
+  project_id     = "${var.project_id}"
+  regional       = "${var.regional}"
+  cluster_name   = "${module.gke.cluster_name}" # creates implicit dependency
+  cluster_region = "${var.cluster_region}"
+  
+  node_pool_name = "utilities-nodes"
+  pool_min_node_count    = "1"
+  initial_node_pool_size = "1"
+  pool_max_node_count    = "3"
+  node_tags              = ["prod", "utilities"]
+  auto_upgrade           = true
+  pool_node_machine_type = "n1-standard-1"
+
+  node_labels = {
+    "target"         = "utilities"
+    "machineType" = "n1-standard-1"
+    "env"         = "prod"
+  }
+  
+  # oauth_scopes define what Google API nodes in the pool have access to.
+  # list of APIs can be found here: https://developers.google.com/identity/protocols/googlescopes
+  oauth_scopes = [
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/devstorage.read_write",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/service.management",
     ]
 
 

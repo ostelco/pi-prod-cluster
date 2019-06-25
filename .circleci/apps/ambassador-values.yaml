@@ -1,15 +1,27 @@
-# Default values for ambassador.
+# Prod values for ambassador.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# replicaCount: 2
-daemonSet: true
+replicaCount: 3
+daemonSet: false
 
-ambassador:
-  id: default
+# Enable autoscaling using HorizontalPodAutoscaler
+# daemonSet: true, autoscaling will be disabled
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: 60
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: 60
 
-namespace:
-  single: false
+# namespace:
   # name: default
 
 # Additional container environment variable
@@ -24,21 +36,23 @@ env:
   # AMBASSADOR_DRAIN_TIME: 5
   # sets the number of seconds that Ambassador will wait for the old Envoy to clean up and exit on a restart
   # AMBASSADOR_SHUTDOWN_TIME: 10
-  # sets the number of seconds that Ambassador will wait for the old Envoy to clean up and exit on a restart
-  # AMBASSADOR_SINGLE_NAMESPACE: true
+  # labels Ambassador with an ID to allow for configuring multiple Ambassadors in a cluster
+  # AMBASSADOR_ID: default
 
 imagePullSecrets: []
 
 securityContext:
-  runAsUser: 0
+  runAsUser: 8888
 
 image:
   repository: quay.io/datawire/ambassador
-  tag: 0.53.1
+  tag: 0.72.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
 fullnameOverride: ""
+dnsPolicy: "ClusterFirst"
+hostNetwork: false
 
 service:
   type: LoadBalancer
@@ -59,27 +73,24 @@ service:
 
   annotations:
     getambassador.io/config: |
-     ---
-     apiVersion: ambassador/v1
-     kind: Module
-     name:  tls
-     config:
-       server:
-         enabled: True
-         redirect_cleartext_from: 80
-       client:
-         enabled: True
-         cert_required: True
-        #  ca_secret: cacert.cert-tes  
-     ---
-     apiVersion: ambassador/v1
-     kind: Module
-     name: ambassador
-     config:
-       use_remote_address: true
-       service_port: 8443
+      ---
+      apiVersion: ambassador/v1
+      kind: Module
+      name:  tls
+      config:
+        server:
+          enabled: True
+          redirect_cleartext_from: 8080
+      ---
+      apiVersion: ambassador/v1
+      kind: Module
+      name: ambassador
+      config:
+        use_remote_address: true
+        service_port: 8443
   #       diagnostics:
   #         enabled: false
+
 
   # externalTrafficPolicy:
   # loadBalancerSourceRanges:
@@ -97,16 +108,25 @@ rbac:
   create: true
   namespaced: false
 
+scope:
+  # tells Ambassador to only use resources in the namespace or namespace set by namespace.name
+  singleNamespace: false
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: 
+  name:
+
+initContainers: []
 
 volumes: []
 
 volumeMounts: []
+
+podLabels:
+  {}
 
 podAnnotations:
   {}
@@ -124,7 +144,8 @@ resources:
   #  cpu: 100m
   #  memory: 128Mi
 
-nodeSelector: {}
+nodeSelector: 
+  target: utilities
 
 tolerations: []
 
@@ -132,10 +153,19 @@ affinity: {}
 
 # Enabling the prometheus exporter creates a sidecar and configures ambassador to use it
 prometheusExporter:
-  enabled: false
+  enabled: true
   repository: prom/statsd-exporter
   tag: v0.8.1
   pullPolicy: IfNotPresent
+  resources: {}
+  # If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #   limits:
+  #     cpu: 100m
+  #     memory: 256Mi
+  #   requests:
+  #     cpu: 50m
+  #     memory: 128Mi
   # You can configure the statsd exporter to modify the behavior of mappings and other features.
   # See documentation: https://github.com/prometheus/statsd_exporter/tree/v0.8.1#metric-mapping-and-configuration
   # Uncomment the following line if you wish to specify a custom configuration:
@@ -149,3 +179,21 @@ prometheusExporter:
   #       cluster_name: "$1"
 
 ambassadorConfig: ""
+
+pro:
+  enabled: false
+  image:
+    repository: quay.io/datawire/ambassador_pro
+    tag: amb-sidecar-0.4.0
+  ports:
+    auth: 8500
+    ratelimit: 8501
+    ratelimitDebug: 8502
+  logLevel: info
+  licenseKey:
+    value:
+    secret: false
+
+crds:
+  create: true
+  keep: true

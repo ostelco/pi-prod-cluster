@@ -17,7 +17,6 @@ password = "$PROD_CLUSTER_PASSWORD" # the name of an environment variable contai
 clusterURI = "$PI_PROD_K8S_ENDPOINT" # the name of an environment variable containing the cluster API
 serviceAccount = "tiller" # k8s serviceaccount. If it does not exist, it will be created.
 storageBackend = "secret" # default is configMap
-#slackWebhook = "$slack" # or "your slack webhook url"
 
 # define your environments and their k8s namespaces
 # syntax: 
@@ -37,25 +36,25 @@ ostelco="https://storage.googleapis.com/pi-ostelco-helm-charts-repo/"
 [apps]
 
     [apps.cert-manager]
-    name = "cert-manager" # should be unique across all apps
+    name = "cert-manager" 
     description = "Cert manager for managing SSL certificates."
-    namespace = "kube-system" # maps to the namespace as defined in environmetns above
-    enabled = true # change to false if you want to delete this app release [empty = flase]
-    chart = "stable/cert-manager" # changing the chart name means delete and recreate this chart
-    version = "0.5.2"
-    valuesFile = "apps/cert-manager-values.yaml" # leaving it empty uses the default chart values
+    namespace = "kube-system" 
+    enabled = true 
+    chart = "jetstack/cert-manager" 
+    version = "0.8.0"
+    valuesFile = "apps/cert-manager-values.yaml" 
     wait = true
     priority = -9
     protected = true
 
     [apps.cert-issuer]
-    name = "cert-issuer" # should be unique across all apps
+    name = "cert-issuer" 
     description = "Cluster Issuers for Cert manager."
-    namespace = "kube-system" # maps to the namespace as defined in environmetns above
-    enabled = true # change to false if you want to delete this app release [empty = flase]
-    chart = "ostelco/cert-issuer" # changing the chart name means delete and recreate this chart
+    namespace = "kube-system" 
+    enabled = true 
+    chart = "ostelco/cert-issuer" 
     version = "0.2.0"
-    valuesFile = "apps/cert-issuer-values.yaml" # leaving it empty uses the default chart values
+    valuesFile = "apps/cert-issuer-values.yaml" 
     priority = -8
     protected = true
 
@@ -64,19 +63,19 @@ ostelco="https://storage.googleapis.com/pi-ostelco-helm-charts-repo/"
     description = "Neo4J deployment"
     namespace = "neo4j"
     enabled = true
-    chart = "stable/neo4j"
-    version = "0.10.0"
+    chart = "ostelco/neo4j"
+    version = "1.0.0"
     valuesFile = "apps/neo4j-values.yaml"
     priority = -7 
     wait = true
-    #protected = true
+    protected = true
 
     [apps.ambassador]
     description = "Ambassador API Gateway."
     namespace = "kube-system" 
     enabled = true 
     chart = "stable/ambassador" 
-    version = "2.1.0"
+    version = "2.8.2"
     valuesFile = "apps/ambassador-values.yaml" 
     wait = true
     priority = -6
@@ -84,7 +83,7 @@ ostelco="https://storage.googleapis.com/pi-ostelco-helm-charts-repo/"
       "service.loadBalancerIP" = "$AMBASSADOR_STATIC_IP"
 
     [apps.prometheus]
-    description = "Promethues dev instance"
+    description = "Promethues prod instance"
     namespace = "kube-system" 
     enabled = true
     chart = "stable/prometheus"
