@@ -31,6 +31,8 @@ storageBackend = "secret" # default is configMap
 # private repos hosted in s3,GCS buckets are supported
 [helmRepos]
 ostelco="https://storage.googleapis.com/pi-ostelco-helm-charts-repo/"
+stable = "https://kubernetes-charts.storage.googleapis.com"
+jetstack = "https://charts.jetstack.io"
 
 
 [apps]
